@@ -9,6 +9,11 @@ import CreateProject from './pages/CreateProject';
 import ProjectDetails from './pages/ProjectDetails';
 import Profile from './pages/Profile';
 import Teams from './pages/Teams';
+import EditProject from './pages/EditProject';
+import UserProfile from './pages/UserProfile';
+import Messages from './pages/Messages';
+import TeamPost from './pages/TeamPost';
+
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
   
@@ -20,7 +25,7 @@ const ProtectedRoute = ({ children }) => {
     );
   }
   
-  return isAuthenticated ? children : <Navigate to="/login" />;
+  return isAuthenticated ? children : <Navigate to="/" />;
 };
 
 const PublicRoute = ({ children }) => {
@@ -34,14 +39,18 @@ const PublicRoute = ({ children }) => {
     );
   }
   
-  return !isAuthenticated ? children : <Navigate to="/dashboard" />;
+  return !isAuthenticated ? children : <Navigate to="/" />;
 };
 
 function AppRoutes() {
   return (
     <Routes>
-      {/* Public Home Page - Everyone can see */}
-      <Route path="/" element={<Home />} />
+      {/* Public Routes - Everyone can see */}
+      <Route path="/" element={<Dashboard />} />
+      <Route path="/project/:id" element={<ProjectDetails />} />
+      <Route path="/user/:id" element={<UserProfile />} />
+      <Route path="/team-posts" element={<TeamPost />} />
+      <Route path="/teams" element={<Teams />} />
       
       {/* Auth Routes - Only for non-logged in users */}
       <Route 
@@ -64,10 +73,10 @@ function AppRoutes() {
       
       {/* Protected Routes - Only for logged in users */}
       <Route 
-        path="/dashboard" 
+        path="/my-projects" 
         element={
           <ProtectedRoute>
-            <Dashboard />
+            <Profile />
           </ProtectedRoute>
         } 
       />
@@ -82,6 +91,15 @@ function AppRoutes() {
       />
       
       <Route 
+        path="/messages/:userId?" 
+        element={
+          <ProtectedRoute>
+            <Messages />
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
         path="/create-project" 
         element={
           <ProtectedRoute>
@@ -91,22 +109,24 @@ function AppRoutes() {
       />
       
       <Route 
-        path="/project/:id" 
+        path="/edit-project/:id" 
         element={
           <ProtectedRoute>
-            <ProjectDetails />
+            <EditProject />
           </ProtectedRoute>
         } 
       />
-      <Route 
-  path="/teams" 
-  element={
-    <ProtectedRoute>
-      <Teams />
-    </ProtectedRoute>
-  } 
-/>
+      
+      {/* teams route handled above as public */}
 
+      {/* Redirect old routes */}
+      <Route path="/dashboard" element={<Navigate to="/" replace />} />
+      
+      {/* Optional: Old Home/Landing page */}
+      <Route path="/about" element={<Home />} />
+      
+      {/* 404 - Catch all */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
@@ -116,7 +136,28 @@ function App() {
     <Router>
       <AuthProvider>
         <AppRoutes />
-        <Toaster position="top-right" />
+        <Toaster 
+          position="top-right"
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: '#fff',
+              color: '#363636',
+            },
+            success: {
+              iconTheme: {
+                primary: '#10b981',
+                secondary: '#fff',
+              },
+            },
+            error: {
+              iconTheme: {
+                primary: '#ef4444',
+                secondary: '#fff',
+              },
+            },
+          }}
+        />
       </AuthProvider>
     </Router>
   );

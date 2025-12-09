@@ -20,7 +20,7 @@ const Profile = () => {
       const response = await projectsAPI.getAll();
       // Filter only projects created by current user
       const userProjects = response.data.data.filter(
-        project => project.author._id === user._id
+        project => project.author?._id?.toString() === user?._id?.toString()
       );
       setMyProjects(userProjects);
     } catch (error) {

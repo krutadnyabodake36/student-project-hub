@@ -32,6 +32,10 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/projects', require('./routes/projectRoutes'));
 app.use('/api/teams', require('./routes/teamRoutes'));
+app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/messages', require('./routes/messageRoutes'));
+app.use('/api/team-posts', require('./routes/teamPostRoutes'));
+
 
 // Root route
 app.get('/', (req, res) => {

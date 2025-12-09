@@ -32,16 +32,15 @@ exports.getProject = async (req, res) => {
       .populate('author', 'name email college skills')
       .populate('collaborators.user', 'name email skills')
       .populate('comments.user', 'name');
-
-    // also populate likes with just ids for client convenience
-    await project.populate('likes', '_id');
-
     if (!project) {
       return res.status(404).json({
         success: false,
         message: 'Project not found'
       });
     }
+
+    // also populate likes with just ids for client convenience
+    await project.populate('likes', '_id');
 
     // Increment views
     project.views += 1;
@@ -124,24 +123,40 @@ exports.createProject = async (req, res) => {
   try {
     const { title, description, techStack, category, githubLink } = req.body;
 
-    if (!title || !description || !techStack || !Array.isArray(techStack) || techStack.length === 0) {
+    // Handle techStack whether it's a string or array
+    let techStackArray = techStack;
+    if (typeof techStack === 'string') {
+      techStackArray = techStack.split(',').map(tech => tech.trim());
+    }
+
+    if (!title || !description || !techStackArray || techStackArray.length === 0) {
       return res.status(400).json({
         success: false,
         message: 'Please provide title, description, and at least one technology'
       });
     }
 
-    const project = await Project.create({
+    const projectData = {
       title,
       description,
-      techStack,
+      techStack: techStackArray,
       category,
       githubLink,
       author: req.user._id
-    });
+    };
+
+    // Handle image if uploaded
+    if (req.file) {
+      projectData.image = `/uploads/${req.file.filename}`;
+    }
+
+    const project = await Project.create(projectData);
+
+    await project.populate('author', 'name email college');
 
     res.status(201).json({
       success: true,
+      message: 'Project created successfully',
       data: project
     });
   } catch (error) {
@@ -174,13 +189,46 @@ exports.updateProject = async (req, res) => {
       });
     }
 
-    project = await Project.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true
-    });
+    // Prepare update data
+    const updateData = {
+      title: req.body.title || project.title,
+      description: req.body.description || project.description,
+      category: req.body.category || project.category,
+      githubLink: req.body.githubLink !== undefined ? req.body.githubLink : project.githubLink,
+      status: req.body.status || project.status,
+    };
+
+    // Handle techStack whether it's a string or array
+    if (req.body.techStack) {
+      if (typeof req.body.techStack === 'string') {
+        updateData.techStack = req.body.techStack.split(',').map(tech => tech.trim());
+      } else {
+        updateData.techStack = req.body.techStack;
+      }
+    }
+
+    // Handle image update
+    if (req.file) {
+      // New image uploaded
+      updateData.image = `/uploads/${req.file.filename}`;
+    } else if (req.body.removeImage === 'true') {
+      // User wants to remove image
+      updateData.image = null;
+    }
+    // If neither, keep existing image (don't update image field)
+
+    project = await Project.findByIdAndUpdate(
+      req.params.id, 
+      updateData,
+      {
+        new: true,
+        runValidators: true
+      }
+    ).populate('author', 'name email college');
 
     res.json({
       success: true,
+      message: 'Project updated successfully',
       data: project
     });
   } catch (error) {

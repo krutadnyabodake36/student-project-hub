@@ -28,6 +28,10 @@ const projectSchema = new mongoose.Schema({
       'Please add a valid GitHub URL'
     ]
   },
+  image: {
+    type: String,
+    default: null
+  },
   author: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
@@ -74,23 +78,17 @@ const projectSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }],
-  image: {
-    type: String,
-    default: ''
-  },
   status: {
     type: String,
-    enum: ['Open', 'In Progress', 'Completed'],
+    enum: ['Open', 'Closed', 'In Progress', 'Completed'],
     default: 'Open'
   },
   views: {
     type: Number,
     default: 0
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
   }
+}, {
+  timestamps: true
 });
 
 module.exports = mongoose.model('Project', projectSchema);

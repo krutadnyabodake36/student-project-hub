@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context';
 import { teamsAPI } from '../utils/api';
 import toast from 'react-hot-toast';
@@ -16,21 +16,22 @@ const Teams = () => {
   });
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    fetchTeams();
-  }, []);
-
-  const fetchTeams = async () => {
+  const fetchTeams = useCallback(async () => {
     try {
       const response = await teamsAPI.getAll();
-      setTeams(response.data.data);
+      setTeams(response.data.data || []);
     } catch (err) {
-      console.error(err);
+      console.error('Failed to fetch teams:', err);
       toast.error('Failed to load team requests');
+      setTeams([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchTeams();
+  }, [fetchTeams]);
 
   const handleChange = (e) => {
     setFormData({
@@ -166,7 +167,7 @@ const Teams = () => {
                       </div>
                     </div>
 
-                    {user?._id !== team.author?._id && (
+                    {user?._id?.toString() !== team.author?._id?.toString() && (
                       <button
                         onClick={() => handleApply(team._id)}
                         className="px-4 py-2 text-sm font-medium text-primary-600 bg-primary-50 rounded-lg hover:bg-primary-100 transition"
