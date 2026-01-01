@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Krutadnya Bodake · Embedded & IoT</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description"
+        content="Portfolio of Krutadnya Bodake, Electronics and Computer Science at VIT Mumbai. Embedded systems, IoT, assistive tech, and emerging AI explorations." />
+
+  <style>
+    :root {
+      /* Color tokens – sophisticated dark */
+      --bg: #050608;
+      --surface: #101218;
+      --surface-elevated: #181b22;
+      --text: #f5f4ef;
+      --muted: #9ea4b3;
+      --accent: #ffb648;            /* electrical amber */
+      --accent-soft: rgba(255, 182, 72, 0.14);
+      --accent-contrast: #15120a;
+      --border: #2a3040;
+
+      /* Light variants (for future use / print) */
+      --bg-light: #f5f4ef;
+      --surface-light: #ffffff;
+      --text-light: #111217;
+      --muted-light: #5a6170;
+      --border-light: #d0d4e0;
+
+      /* Typography tokens */
+      --font-display: "Fraunces", "Times New Roman", serif;
+      --font-body: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+      /* Fluid type scale with clamp() */
+      --step--1: clamp(0.8rem, 0.7rem + 0.2vw, 0.9rem);
+      --step-0: clamp(0.95rem, 0.9rem + 0.2vw, 1rem);
+      --step-1: clamp(1.1rem, 1rem + 0.4vw, 1.25rem);
+      --step-2: clamp(1.4rem, 1.1rem + 0.8vw, 1.6rem);
+      --step-3: clamp(1.7rem, 1.3rem + 1.2vw, 2.1rem);
+      --step-4: clamp(2.2rem, 1.7rem + 1.8vw, 2.8rem);
+
+      /* Layout tokens */
+      --page-max-width: 70rem;
+      --radius-sm: 0.4rem;
+      --radius-md: 0.8rem;
+      --radius-pill: 999px;
+      --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.45);
+
+      /* Motion tokens */
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --duration-fast: 150ms;
+      --duration-med: 260ms;
+      --duration-slow: 420ms;
+      --stagger-delay: 80ms;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: radial-gradient(circle at top, #10131f 0, #050608 55%);
+      color-scheme: dark;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font-body);
+      font-size: var(--step-0);
+      line-height: 1.6;
+      color: var(--text);
+      background:
+        linear-gradient(
+          rgba(5, 6, 8, 0.98),
+          rgba(5, 6, 8, 1)
+        );
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Subtle engineering grid + grain layer */
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: -2;
+    }
+
+    body::before {
+      background-image:
+        linear-gradient(
+          rgba(255, 255, 255, 0.03) 1px,
+          transparent 1px
+        ),
+        linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0.03) 1px,
+          transparent 1px
+        );
+      background-size: 40px 40px;
+      opacity: 0.3;
+    }
+
+    body::after {
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 1600 800' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3' stitchTiles='noStitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.18'/%3E%3C/svg%3E");
+      mix-blend-mode: soft-light;
+      opacity: 0.5;
+    }
+
+    main {
+      max-width: var(--page-max-width);
+      margin: 0 auto;
+      padding: 5.5rem 1.5rem 4rem;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    a:focus-visible,
+    button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    /* Header / Nav */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(
+        to bottom,
+        rgba(5, 6, 8, 0.9),
+        rgba(5, 6, 8, 0.78),
+        transparent
+      );
+      border-bottom: 1px solid rgba(42, 48, 64, 0.65);
+    }
+
+    .nav {
+      max-width: var(--page-max-width);
+      margin: 0 auto;
+      padding: 0.6rem 1.5rem 0.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      font-family: var(--font-display);
+      font-size: var(--step-1);
+      letter-spacing: 0.04em;
+    }
+
+    .nav-brand span {
+      font-size: var(--step--1);
+      color: var(--muted);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      font-size: var(--step--1);
+    }
+
+    .nav-link {
+      position: relative;
+      padding: 0.3rem 0;
+      color: var(--muted);
+    }
+
+    .nav-link::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -0.2rem;
+      width: 0;
+      height: 2px;
+      background: var(--accent);
+      transition: width var(--duration-med) var(--ease-out);
+    }
+
+    .nav-link:hover {
+      color: var(--text);
+    }
+
+    .nav-link:hover::after,
+    .nav-link--active::after {
+      width: 100%;
+    }
+
+    .nav-link--active {
+      color: var(--text);
+    }
+
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    /* Buttons */
+    .btn {
+      border-radius: var(--radius-pill);
+      border: 1px solid transparent;
+      padding: 0.45rem 1.1rem;
+      font-size: var(--step--1);
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      cursor: pointer;
+      background: none;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition:
+        background-color var(--duration-med) var(--ease-out),
+        color var(--duration-med) var(--ease-out),
+        border-color var(--duration-med) var(--ease-out),
+        transform var(--duration-fast) var(--ease-out),
+        box-shadow var(--duration-med) var(--ease-out);
+    }
+
+    .btn-primary {
+      background: radial-gradient(circle at top left, #ffd89f 0, #ffb648 40%, #f29e3b 80%);
+      color: var(--accent-contrast);
+      border-color: rgba(0, 0, 0, 0.5);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 24px 50px rgba(0, 0, 0, 0.6);
+    }
+
+    .btn-ghost {
+      border-color: rgba(158, 164, 179, 0.6);
+      color: var(--muted);
+      background: radial-gradient(circle at top left, rgba(255, 182, 72, 0.08), transparent 55%);
+    }
+
+    .btn-ghost:hover {
+      color: var(--text);
+      border-color: rgba(255, 182, 72, 0.7);
+      background: radial-gradient(circle at top, rgba(255, 182, 72, 0.16), transparent 55%);
+    }
+
+    /* Hero */
+    .hero {
+      display: grid;
+      gap: 2.2rem;
+      align-items: center;
+      padding: 2.6rem 0 3.2rem;
+      grid-template-columns: minmax(0, 3fr);
+    }
+
+    .hero-kicker {
+      font-size: var(--step--1);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .hero-kicker-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: var(--step-4);
+      line-height: 1.15;
+      letter-spacing: 0.02em;
+      max-width: 22ch;
+      margin: 0.7rem 0 0.8rem;
+    }
+
+    .hero-sub {
+      font-size: var(--step-1);
+      max-width: 42ch;
+      color: var(--muted);
+      margin-bottom: 1.8rem;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.9rem;
+      margin-bottom: 2rem;
+    }
+
+    .pill {
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(158, 164, 179, 0.6);
+      padding: 0.2rem 0.75rem;
+      font-size: var(--step--1);
+      color: var(--muted);
+      background: rgba(16, 18, 24, 0.8);
+    }
+
+    .pill-strong {
+      border-color: rgba(255, 182, 72, 0.75);
+      color: var(--accent);
+      background: rgba(255, 182, 72, 0.06);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.9rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .hero-note {
+      font-size: var(--step--1);
+      color: var(--muted);
+      max-width: 40ch;
+    }
+
+    /* Section layout */
+    section {
+      padding: 2rem 0 2.4rem;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1.5rem;
+      margin-bottom: 1.6rem;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: var(--step-2);
+      margin: 0;
+    }
+
+    .section-kicker {
+      font-size: var(--step--1);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .section-intro {
+      max-width: 40ch;
+      font-size: var(--step-0);
+      color: var(--muted);
+    }
+
+    /* Projects */
+    .projects-grid {
+      display: grid;
+      gap: 1.6rem;
+    }
+
+    .project-card {
+      border-radius: var(--radius-md);
+      background: radial-gradient(circle at top left, rgba(255, 182, 72, 0.10), rgba(16, 18, 24, 0.96));
+      border: 1px solid var(--border);
+      padding: 1.4rem 1.3rem 1.5rem;
+      display: grid;
+      grid-template-columns: minmax(0, 2.4fr) minmax(0, 2fr);
+      gap: 1.4rem;
+      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.7);
+      transition:
+        transform var(--duration-med) var(--ease-out),
+        box-shadow var(--duration-med) var(--ease-out),
+        border-color var(--duration-med) var(--ease-out);
+    }
+
+    .project-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.8);
+      border-color: rgba(255, 182, 72, 0.7);
+    }
+
+    .project-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .project-title {
+      margin: 0;
+      font-size: var(--step-1);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .project-tagline {
+      font-size: var(--step-0);
+      color: var(--muted);
+    }
+
+    .project-structure {
+      margin-top: 0.6rem;
+      font-size: var(--step--1);
+      color: var(--muted);
+    }
+
+    .project-structure span {
+      color: var(--accent);
+    }
+
+    .project-pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.8rem;
+    }
+
+    .chip {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(158, 164, 179, 0.6);
+      padding: 0.22rem 0.6rem;
+      color: var(--muted);
+    }
+
+    .chip-strong {
+      border-color: rgba(255, 182, 72, 0.8);
+      color: var(--accent);
+      background: rgba(255, 182, 72, 0.08);
+    }
+
+    .project-body {
+      font-size: var(--step--1);
+      color: var(--muted);
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .project-body strong {
+      color: var(--text);
+    }
+
+    .project-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.7rem;
+      margin-top: 0.8rem;
+    }
+
+    .project-link {
+      font-size: var(--step--1);
+      color: var(--accent);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .project-media-placeholder {
+      border-radius: var(--radius-md);
+      border: 1px dashed rgba(158, 164, 179, 0.7);
+      background: radial-gradient(circle at top left, rgba(255, 182, 72, 0.06), rgba(10, 12, 18, 0.98));
+      min-height: 8.5rem;
+      padding: 0.9rem 0.95rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      font-size: var(--step--1);
+      color: var(--muted);
+    }
+
+    .project-media-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+    }
+
+    /* Experience */
+    .timeline {
+      border-left: 1px solid var(--border);
+      margin-top: 0.5rem;
+      padding-left: 1.4rem;
+      display: grid;
+      gap: 1.6rem;
+    }
+
+    .timeline-item {
+      position: relative;
+    }
+
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      left: -1.6rem;
+      top: 0.2rem;
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 5px var(--accent-soft);
+    }
+
+    .timeline-meta {
+      font-size: var(--step--1);
+      color: var(--muted);
+      margin-bottom: 0.2rem;
+    }
+
+    .timeline-title {
+      font-size: var(--step-0);
+      margin: 0 0 0.2rem;
+    }
+
+    .timeline-role {
+      color: var(--muted);
+      font-size: var(--step--1);
+      margin-bottom: 0.3rem;
+    }
+
+    .timeline-list {
+      padding-left: 1rem;
+      margin: 0.2rem 0 0.3rem;
+      font-size: var(--step--1);
+      color: var(--muted);
+    }
+
+    .timeline-list li {
+      margin-bottom: 0.2rem;
+    }
+
+    /* About */
+    .about-layout {
+      display: grid;
+      gap: 1.8rem;
+      grid-template-columns: minmax(0, 2.5fr) minmax(0, 3fr);
+      align-items: flex-start;
+    }
+
+    .about-text {
+      font-size: var(--step-0);
+      color: var(--muted);
+    }
+
+    .skills-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .skills-group-title {
+      font-size: var(--step--1);
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+      margin-bottom: 0.2rem;
+    }
+
+    .skills-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+    }
+
+    .skill-tag {
+      font-size: 0.75rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(158, 164, 179, 0.6);
+      padding: 0.16rem 0.55rem;
+      color: var(--muted);
+      background: rgba(16, 18, 24, 0.9);
+    }
+
+    .skill-tag-strong {
+      border-color: rgba(255, 182, 72, 0.8);
+      color: var(--accent);
+    }
+
+    .roadmap {
+      margin-top: 0.8rem;
+      font-size: var(--step--1);
+      color: var(--muted);
+    }
+
+    /* Contact / Footer */
+    .contact-card {
+      border-radius: var(--radius-md);
+      background: radial-gradient(circle at top left, rgba(255, 182, 72, 0.08), rgba(16, 18, 24, 0.98));
+      border: 1px solid var(--border);
+      padding: 1.5rem 1.4rem;
+      display: grid;
+      gap: 1rem;
+    }
+
+    .contact-text {
+      font-size: var(--step-0);
+      color: var(--muted);
+    }
+
+    .contact-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      font-size: var(--step--1);
+    }
+
+    .contact-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      color: var(--accent);
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      margin-top: 3rem;
+      padding-top: 1rem;
+      padding-bottom: 1.4rem;
+      font-size: var(--step--1);
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    /* Motion: base */
+    [data-animate] {
+      opacity: 0;
+      transform: translateY(14px);
+      transition:
+        opacity var(--duration-slow) var(--ease-out),
+        transform var(--duration-slow) var(--ease-out);
+    }
+
+    [data-animate].in-view {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Reduced motion: respect user preference */
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      [data-animate] {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+    }
+
+    /* Responsiveness */
+    @media (max-width: 900px) {
+      .hero {
+        padding-top: 2.2rem;
+      }
+
+      .project-card {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .about-layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    @media (max-width: 720px) {
+      .nav {
+        padding-inline: 1rem;
+      }
+
+      main {
+        padding-inline: 1rem;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero-title {
+        font-size: var(--step-3);
+      }
+
+      footer {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav" aria-label="Primary">
+      <div class="nav-brand">
+        <span>KB</span> <span>/ Embedded &amp; IoT</span>
+      </div>
+      <nav class="nav-links">
+        <a class="nav-link nav-link--active" href="#about">About</a>
+        <a class="nav-link" href="#projects">Projects</a>
+        <a class="nav-link" href="#experience">Experience</a>
+        <a class="nav-link" href="#contact">Contact</a>
+      </nav>
+      <div class="nav-cta">
+        <a class="btn btn-ghost" href="#projects">View Projects</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div data-animate>
+        <div class="hero-kicker">
+          <span class="hero-kicker-dot" aria-hidden="true"></span>
+          <span>Electronics &amp; Computer Science · VIT Mumbai</span>
+        </div>
+        <h1 id="hero-title" class="hero-title">
+          Building reliable embedded systems and thoughtful interfaces.
+        </h1>
+        <p class="hero-sub">
+          Electronics and IoT focus with a growing curiosity for **applied AI**, learning by making and refining real systems end to end.
+        </p>
+        <div class="hero-meta">
+          <span class="pill pill-strong">Electronics · IoT · Embedded</span>
+          <span class="pill">Assistive tech &amp; interfaces</span>
+          <span class="pill">Exploring on-device ML</span>
+        </div>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#projects">View Projects</a>
+          <a class="btn btn-ghost" href="mailto:[youremail]">Email</a>
+          <a class="btn btn-ghost" href="[resume-link]" aria-label="Download Krutadnya Bodake résumé">
+            Résumé
+          </a>
+        </div>
+        <p class="hero-note">
+          Currently prototyping a gesture vocalizer glove and refining a light-following robot, while exploring AI techniques to make devices smarter and more adaptive.
+        </p>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" aria-labelledby="about-title">
+      <div class="section-header" data-animate>
+        <div>
+          <p class="section-kicker">About</p>
+          <h2 id="about-title" class="section-title">Systems-minded and hands-on</h2>
+        </div>
+        <p class="section-intro">
+          Working at the intersection of electronics, firmware, and emerging AI, with a focus on building robust systems that behave predictably in the real world.
+        </p>
+      </div>
+
+      <div class="about-layout" data-animate>
+        <div class="about-text">
+          <p>
+            Krutadnya Bodake is an Electronics and Computer Science student at VIT Mumbai who learns by wiring, coding, and observing how systems behave under real constraints.
+          </p>
+          <p>
+            Projects span light-following robots, assistive-technology wearables, and a narrative-led portfolio site, all built to test ideas in hardware, firmware, and interfaces rather than only on paper.
+          </p>
+          <p>
+            The goal is simple: ship reliable embedded systems that are understandable, debuggable, and ready to host smarter logic as AI tools mature.
+          </p>
+        </div>
+
+        <div class="skills-grid" aria-label="Skills and roadmap">
+          <div>
+            <p class="skills-group-title">Hardware</p>
+            <div class="skills-tags">
+              <span class="skill-tag skill-tag-strong">Arduino / AVR</span>
+              <span class="skill-tag">Sensors (LDR, flex, IMU)</span>
+              <span class="skill-tag">Motor drivers &amp; H-bridges</span>
+              <span class="skill-tag">Prototyping on breadboard</span>
+            </div>
+          </div>
+
+          <div>
+            <p class="skills-group-title">Firmware</p>
+            <div class="skills-tags">
+              <span class="skill-tag">C / Embedded C</span>
+              <span class="skill-tag">Signal conditioning</span>
+              <span class="skill-tag">Serial &amp; Bluetooth link</span>
+              <span class="skill-tag">Control loops / PID</span>
+            </div>
+          </div>
+
+          <div>
+            <p class="skills-group-title">Data &amp; AI explorations</p>
+            <div class="skills-tags">
+              <span class="skill-tag">Gesture feature design</span>
+              <span class="skill-tag">Latency budgeting</span>
+              <span class="skill-tag">On-device ML (roadmap)</span>
+            </div>
+          </div>
+
+          <div>
+            <p class="skills-group-title">Web tooling</p>
+            <div class="skills-tags">
+              <span class="skill-tag">React / Next.js or Vite</span>
+              <span class="skill-tag">Semantic HTML</span>
+              <span class="skill-tag">CSS tokens &amp; dark mode</span>
+            </div>
+          </div>
+
+          <div class="roadmap">
+            <strong>Learning roadmap:</strong>
+            tighter PID tuning, IMU fusion for gestures, small on-device classifiers, and production-ready React with accessible, token-driven design.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects -->
+    <section id="projects" aria-labelledby="projects-title">
+      <div class="section-header" data-animate>
+        <div>
+          <p class="section-kicker">Projects</p>
+          <h2 id="projects-title" class="section-title">Building and iterating in hardware</h2>
+        </div>
+        <p class="section-intro">
+          Each project follows a simple pattern: Problem, Constraints, Approach, Outcome, and the next iteration to make the system more reliable or intelligent.
+        </p>
+      </div>
+
+      <div class="projects-grid">
+        <!-- Light-Following Robot -->
+        <article class="project-card" data-animate aria-labelledby="proj-light-title">
+          <div class="project-meta">
+            <h3 id="proj-light-title" class="project-title">Light-Following Robot</h3>
+            <p class="project-tagline">
+              Tracks a moving light source with tuned motor control to stay stable under changing ambient lighting.
+            </p>
+            <p class="project-structure">
+              <span>Case structure:</span> Problem → Constraints → Approach → Outcome → Next iteration
+            </p>
+            <div class="project-pill-row">
+              <span class="chip chip-strong">Embedded C</span>
+              <span class="chip">Arduino</span>
+              <span class="chip">LDR / Photodiodes</span>
+              <span class="chip">H-bridge</span>
+              <span class="chip">PID control</span>
+            </div>
+            <div class="project-body" aria-label="Light-following robot case study">
+              <p>
+                <strong>Problem:</strong> Build a small robot that can lock onto and follow a hand-held light source in real time, without oscillating or drifting when the environment changes.
+              </p>
+              <p>
+                <strong>Constraints:</strong> Low-cost LDR sensing, noisy ambient light, tight response time, and limited current for motors and logic.
+              </p>
+              <p>
+                <strong>Approach:</strong> Arranged an LDR array to give directional hints, normalized readings, and experimented with thresholding before moving to a simple PID-style loop to modulate each wheel’s speed.
+              </p>
+              <p>
+                <strong>Outcome:</strong> The robot tracks a flashlight with noticeably smoother turns and fewer stalls, and stays more stable under mixed indoor lighting after tuning gains and adding basic filtering.
+              </p>
+              <p>
+                <strong>Next iteration:</strong> Improve behavior under occlusion, add better smoothing or a lightweight filter, and explore small ML models to classify target vs background light.
+              </p>
+              <div class="project-links">
+                <a class="project-link" href="[light-following-repo]" target="_blank" rel="noreferrer">
+                  <span>Repo</span> <span aria-hidden="true">↗</span>
+                </a>
+                <a class="project-link" href="[light-following-demo]" target="_blank" rel="noreferrer">
+                  <span>Demo</span> <span aria-hidden="true">▶︎</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="project-media-placeholder" aria-label="Light-following robot media">
+            <div>
+              <div class="project-media-label">Media</div>
+              <p>
+                Close-ups of the sensor array, H-bridge wiring, and a top-down view of the robot following a moving light spot across the floor.
+              </p>
+            </div>
+            <p>
+              Add short clips with captions describing the scenario (e.g., “Robot following a flashlight across a dim hallway.”).
+            </p>
+          </div>
+        </article>
+
+        <!-- Gesture Vocalizer Glove -->
+        <article class="project-card" data-animate aria-labelledby="proj-glove-title">
+          <div class="project-meta">
+            <h3 id="proj-glove-title" class="project-title">Gesture Vocalizer Glove</h3>
+            <p class="project-tagline">
+              Converts defined hand gestures into spoken phrases, focusing on comfort, latency, and assistive communication.
+            </p>
+            <p class="project-structure">
+              <span>Case structure:</span> Problem → Constraints → Approach → Outcome → Next iteration
+            </p>
+            <div class="project-pill-row">
+              <span class="chip chip-strong">Wearable</span>
+              <span class="chip">Flex sensors / IMU</span>
+              <span class="chip">Microcontroller</span>
+              <span class="chip">Bluetooth / Serial</span>
+              <span class="chip">TTS companion</span>
+            </div>
+            <div class="project-body" aria-label="Gesture vocalizer glove case study">
+              <p>
+                <strong>Problem:</strong> Enable hands-free or speech-limited users to trigger common phrases using simple, repeatable hand gestures.
+              </p>
+              <p>
+                <strong>Constraints:</strong> Comfortable glove fit, variable hand sizes, sensor drift and noise, and a strict end-to-end latency target around [latency] ms.
+              </p>
+              <p>
+                <strong>Approach:</strong> Mapped flex sensor bends and IMU orientation to a small vocabulary of gestures, added calibration steps, and filtered readings before sending compact payloads over serial/Bluetooth to a companion app for text-to-speech.
+              </p>
+              <p>
+                <strong>Outcome:</strong> The prototype reliably triggers a core phrase set in quick tests, exposing where false positives appear and how calibration flow affects real users.
+              </p>
+              <p>
+                <strong>Next iteration:</strong> Move towards on-device gesture classification with small ML models, expand vocabulary, and refine the glove hardware to be lighter and easier to wear for longer sessions.
+              </p>
+              <div class="project-links">
+                <a class="project-link" href="[glove-repo]" target="_blank" rel="noreferrer">
+                  <span>Repo</span> <span aria-hidden="true">↗</span>
+                </a>
+                <a class="project-link" href="[glove-demo]" target="_blank" rel="noreferrer">
+                  <span>Demo</span> <span aria-hidden="true">▶︎</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="project-media-placeholder" aria-label="Gesture vocalizer glove media">
+            <div>
+              <div class="project-media-label">Media</div>
+              <p>
+                Photos of the glove worn on the hand, sensor routing along each finger, and screenshots of the companion TTS interface.
+              </p>
+            </div>
+            <p>
+              Include demo clips with captions like “Performing the ‘Hello’ gesture; laptop reads out the mapped phrase via TTS.”
+            </p>
+          </div>
+        </article>
+
+        <!-- Projects Website -->
+        <article class="project-card" data-animate aria-labelledby="proj-site-title">
+          <div class="project-meta">
+            <h3 id="proj-site-title" class="project-title">Projects Website</h3>
+            <p class="project-tagline">
+              A fast, accessible portfolio with dark mode, design tokens, and deeper case-study write-ups.
+            </p>
+            <p class="project-structure">
+              <span>Case structure:</span> Problem → Constraints → Approach → Outcome → What I learned
+            </p>
+            <div class="project-pill-row">
+              <span class="chip chip-strong">Next.js / Vite</span>
+              <span class="chip">React</span>
+              <span class="chip">Semantic HTML</span>
+              <span class="chip">CSS variables</span>
+              <span class="chip">Dark mode</span>
+            </div>
+            <div class="project-body" aria-label="Projects website case study">
+              <p>
+                <strong>Problem:</strong> Replace scattered links with a single, coherent portfolio that reads like a set of engineering case studies instead of disconnected demos.
+              </p>
+              <p>
+                <strong>Constraints:</strong> High performance, accessible color contrast, simple deployment, and a layout that adapts cleanly from mobile to desktop.
+              </p>
+              <p>
+                <strong>Approach:</strong> Built a SPA/MPA using React with semantic landmarks, a token-driven color and type system, and support for dark mode via CSS variables and media queries.
+              </p>
+              <p>
+                <strong>Outcome:</strong> The site achieves strong performance scores and clearer storytelling, making it easier to see how each project evolved from problem to next iteration.
+              </p>
+              <p>
+                <strong>What I learned:</strong> The impact of color contrast, focus management, and consistent IA on how technical work is understood by reviewers and collaborators.
+              </p>
+              <div class="project-links">
+                <a class="project-link" href="[live-site]" target="_blank" rel="noreferrer">
+                  <span>Live site</span> <span aria-hidden="true">↗</span>
+                </a>
+                <a class="project-link" href="[site-repo]" target="_blank" rel="noreferrer">
+                  <span>Repo</span> <span aria-hidden="true"></span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="project-media-placeholder" aria-label="Projects website media">
+            <div>
+              <div class="project-media-label">Media</div>
+              <p>
+                Screenshots of the hero, project cards, and dark/light modes, with annotations on tokens and accessibility checks.
+              </p>
+            </div>
+            <p>
+              Provide alt text for each screenshot describing layout, color palette, and the information hierarchy.
+            </p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Experience -->
+    <section id="experience" aria-labelledby="experience-title">
+      <div class="section-header" data-animate>
+        <div>
+          <p class="section-kicker">Experience</p>
+          <h2 id="experience-title" class="section-title">Internships and service</h2>
+        </div>
+        <p class="section-intro">
+          A mix of internship work, NSS volunteering, and hands-on lab courses, with emphasis on shipped outcomes rather than only grades.
+        </p>
+      </div>
+
+      <div class="timeline" data-animate>
+        <article class="timeline-item" aria-labelledby="exp-internship-title">
+          <p class="timeline-meta">[Month Year] – [Month Year]</p>
+          <h3 id="exp-internship-title" class="timeline-title">[Company]</h3>
+          <p class="timeline-role">[Role] — Embedded / IoT</p>
+          <ul class="timeline-list">
+            <li>Built [feature/system] that improved [metric/outcome] for [team/use-case].</li>
+            <li>Collaborated with [team] to integrate firmware changes with existing dashboards or infrastructure.</li>
+            <li>Used tools like [MCUs, debuggers, cloud services] to ship a working, testable system.</li>
+          </ul>
+        </article>
+
+        <article class="timeline-item" aria-labelledby="exp-nss-title">
+          <p class="timeline-meta">[Year] – Present</p>
+          <h3 id="exp-nss-title" class="timeline-title">National Service Scheme (NSS)</h3>
+          <p class="timeline-role">Member</p>
+          <ul class="timeline-list">
+            <li>Coordinated [event/service], contributing [hours/outcome] and supporting logistics for volunteers and participants.</li>
+            <li>Helped set up basic tech and communication flows for events, applying systems thinking to resources and roles.</li>
+          </ul>
+        </article>
+
+        <article class="timeline-item" aria-labelledby="exp-course-title">
+          <p class="timeline-meta">Coursework &amp; labs</p>
+          <h3 id="exp-course-title" class="timeline-title">Labs and practicals</h3>
+          <p class="timeline-role">Electronics · Microcontrollers · IoT</p>
+          <ul class="timeline-list">
+            <li>Designed and tested small embedded circuits, from sensor readouts to motor drivers.</li>
+            <li>Documented experiments with timing diagrams, measurements, and failure analysis instead of only final results.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" aria-labelledby="contact-title">
+      <div class="section-header" data-animate>
+        <div>
+          <p class="section-kicker">Contact</p>
+          <h2 id="contact-title" class="section-title">Open to internships and collaborations</h2>
+        </div>
+        <p class="section-intro">
+          Especially interested in embedded/IoT projects with clear real-world constraints and space to experiment with small AI models on the edge.
+        </p>
+      </div>
+
+      <div class="contact-card" data-animate>
+        <p class="contact-text">
+          Open to internships and collaborations in embedded systems, IoT, and applied AI for assistive or human-centered devices. Email is the fastest way to reach out, but feel free to connect on LinkedIn or explore projects on GitHub.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="mailto:[youremail]">Email</a>
+          <a class="btn btn-ghost" href="[resume-link]">Download résumé</a>
+        </div>
+        <div class="contact-links" aria-label="Social links">
+          <a class="contact-link" href="mailto:[youremail]">
+            <span aria-hidden="true">●</span> <span>[youremail]</span>
+          </a>
+          <a class="contact-link" href="[linkedin]" target="_blank" rel="noreferrer">
+            <span aria-hidden="true">↗</span> <span>LinkedIn</span>
+          </a>
+          <a class="contact-link" href="[github]" target="_blank" rel="noreferrer">
+            <span aria-hidden="true">⧉</span> <span>GitHub</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <span>© <span id="year"></span> Krutadnya Bodake · VIT Mumbai</span>
+      <span>Designed as a narrative-led, accessible portfolio with WCAG-aware colors and reduced-motion support.[web:21][web:3][web:9]</span>
+    </footer>
+  </main>
+
+  <script>
+    // Active nav link on scroll
+    const sections = document.querySelectorAll("section[id]");
+    const navLinks = document.querySelectorAll(".nav-link");
+
+    function setActiveLink() {
+      let currentId = "";
+      const scrollY = window.scrollY + 120;
+      sections.forEach((section) => {
+        if (scrollY >= section.offsetTop && scrollY < section.offsetTop + section.offsetHeight) {
+          currentId = section.id;
+        }
+      });
+      navLinks.forEach((link) => {
+        link.classList.toggle("nav-link--active", link.getAttribute("href") === "#" + currentId);
+      });
+    }
+
+    window.addEventListener("scroll", setActiveLink);
+    window.addEventListener("load", setActiveLink);
+
+    // Simple staggered reveal using IntersectionObserver
+    const animated = document.querySelectorAll("[data-animate]");
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (!prefersReduced && "IntersectionObserver" in window) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("in-view");
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.12 }
+      );
+      animated.forEach((el, index) => {
+        el.style.transitionDelay = index * 80 + "ms";
+        observer.observe(el);
+      });
+    } else {
+      animated.forEach((el) => el.classList.add("in-view"));
+    }
+
+    // Footer year
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

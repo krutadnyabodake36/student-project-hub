@@ -6,12 +6,12 @@ const AuthModal = ({ isOpen, onClose, defaultTab = 'login' }) => {
   const { login, register } = useAuth();
   const [activeTab, setActiveTab] = useState(defaultTab);
   const [loading, setLoading] = useState(false);
-  
+
   const [loginData, setLoginData] = useState({
     email: '',
     password: ''
   });
-  
+
   const [registerData, setRegisterData] = useState({
     name: '',
     email: '',
@@ -26,11 +26,13 @@ const AuthModal = ({ isOpen, onClose, defaultTab = 'login' }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await login(loginData.email, loginData.password);
-      toast.success('Welcome back! 🎉');
-      onClose();
+      const result = await login(loginData);
+      if (result.success) {
+        toast.success('Welcome back! 🎉');
+        onClose();
+      }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Login failed');
+      // Error already handled by AuthContext
     } finally {
       setLoading(false);
     }
@@ -44,64 +46,64 @@ const AuthModal = ({ isOpen, onClose, defaultTab = 'login' }) => {
         ...registerData,
         skills: registerData.skills.split(',').map(s => s.trim())
       };
-      await register(userData);
-      toast.success('Account created! Welcome! 🎉');
-      onClose();
+      const result = await register(userData);
+      if (result.success) {
+        toast.success('Account created! Welcome! 🎉');
+        onClose();
+      }
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Registration failed');
+      // Error already handled by AuthContext
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 px-4">
-      <div className="bg-white rounded-xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4 fade-in">
+      <div className="glass-dark rounded-3xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto border-2 border-white/20 scale-in">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-2xl font-bold text-gray-900">
+        <div className="flex items-center justify-between p-8 border-b border-white/20">
+          <h2 className="text-3xl font-black text-white neon-glow">
             {activeTab === 'login' ? 'Welcome Back' : 'Join Student Hub'}
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition"
+            className="text-white/70 hover:text-white transition-all hover:rotate-90 transform duration-300"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b">
+        <div className="flex border-b border-white/20">
           <button
             onClick={() => setActiveTab('login')}
-            className={`flex-1 py-3 font-medium transition ${
-              activeTab === 'login'
-                ? 'text-primary-600 border-b-2 border-primary-600'
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
+            className={`flex-1 py-4 font-black transition-all ${activeTab === 'login'
+                ? 'text-white border-b-4 border-yellow-400 bg-white/10'
+                : 'text-white/60 hover:text-white hover:bg-white/5'
+              }`}
           >
             Login
           </button>
           <button
             onClick={() => setActiveTab('register')}
-            className={`flex-1 py-3 font-medium transition ${
-              activeTab === 'register'
-                ? 'text-primary-600 border-b-2 border-primary-600'
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
+            className={`flex-1 py-4 font-black transition-all ${activeTab === 'register'
+                ? 'text-white border-b-4 border-yellow-400 bg-white/10'
+                : 'text-white/60 hover:text-white hover:bg-white/5'
+              }`}
           >
             Sign Up
           </button>
         </div>
 
         {/* Forms */}
-        <div className="p-6">
+        <div className="p-8">
           {activeTab === 'login' ? (
-            <form onSubmit={handleLoginSubmit} className="space-y-4">
+            <form onSubmit={handleLoginSubmit} className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-white mb-2">
                   Email
                 </label>
                 <input
@@ -109,13 +111,13 @@ const AuthModal = ({ isOpen, onClose, defaultTab = 'login' }) => {
                   required
                   value={loginData.email}
                   onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-5 py-4 bg-white/10 border-2 border-white/30 rounded-xl text-white placeholder-white/50 focus:border-yellow-400 focus:bg-white/20 transition-all font-medium"
                   placeholder="your@email.com"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-white mb-2">
                   Password
                 </label>
                 <input
@@ -123,7 +125,7 @@ const AuthModal = ({ isOpen, onClose, defaultTab = 'login' }) => {
                   required
                   value={loginData.password}
                   onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-5 py-4 bg-white/10 border-2 border-white/30 rounded-xl text-white placeholder-white/50 focus:border-yellow-400 focus:bg-white/20 transition-all font-medium"
                   placeholder="••••••••"
                 />
               </div>
@@ -131,15 +133,17 @@ const AuthModal = ({ isOpen, onClose, defaultTab = 'login' }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 bg-primary-500 text-white font-medium rounded-lg hover:bg-primary-600 transition disabled:opacity-50"
+                className="relative w-full py-4 text-lg font-black text-purple-900 rounded-xl overflow-hidden group shadow-2xl disabled:opacity-50 transform hover:scale-105 transition-all"
               >
-                {loading ? 'Logging in...' : 'Login'}
+                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 group-hover:scale-110 transition-transform"></div>
+                <div className="absolute inset-0 shimmer"></div>
+                <span className="relative">{loading ? 'Logging in...' : 'Login'}</span>
               </button>
             </form>
           ) : (
-            <form onSubmit={handleRegisterSubmit} className="space-y-4">
+            <form onSubmit={handleRegisterSubmit} className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-white mb-2">
                   Full Name
                 </label>
                 <input
@@ -147,13 +151,13 @@ const AuthModal = ({ isOpen, onClose, defaultTab = 'login' }) => {
                   required
                   value={registerData.name}
                   onChange={(e) => setRegisterData({ ...registerData, name: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-5 py-4 bg-white/10 border-2 border-white/30 rounded-xl text-white placeholder-white/50 focus:border-yellow-400 focus:bg-white/20 transition-all font-medium"
                   placeholder="John Doe"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-white mb-2">
                   Email
                 </label>
                 <input
@@ -161,13 +165,13 @@ const AuthModal = ({ isOpen, onClose, defaultTab = 'login' }) => {
                   required
                   value={registerData.email}
                   onChange={(e) => setRegisterData({ ...registerData, email: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-5 py-4 bg-white/10 border-2 border-white/30 rounded-xl text-white placeholder-white/50 focus:border-yellow-400 focus:bg-white/20 transition-all font-medium"
                   placeholder="your@email.com"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-white mb-2">
                   Password
                 </label>
                 <input
@@ -175,13 +179,13 @@ const AuthModal = ({ isOpen, onClose, defaultTab = 'login' }) => {
                   required
                   value={registerData.password}
                   onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-5 py-4 bg-white/10 border-2 border-white/30 rounded-xl text-white placeholder-white/50 focus:border-yellow-400 focus:bg-white/20 transition-all font-medium"
                   placeholder="••••••••"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-white mb-2">
                   College/University
                 </label>
                 <input
@@ -189,13 +193,13 @@ const AuthModal = ({ isOpen, onClose, defaultTab = 'login' }) => {
                   required
                   value={registerData.college}
                   onChange={(e) => setRegisterData({ ...registerData, college: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-5 py-4 bg-white/10 border-2 border-white/30 rounded-xl text-white placeholder-white/50 focus:border-yellow-400 focus:bg-white/20 transition-all font-medium"
                   placeholder="MIT"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-white mb-2">
                   Skills (comma separated)
                 </label>
                 <input
@@ -203,7 +207,7 @@ const AuthModal = ({ isOpen, onClose, defaultTab = 'login' }) => {
                   required
                   value={registerData.skills}
                   onChange={(e) => setRegisterData({ ...registerData, skills: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-5 py-4 bg-white/10 border-2 border-white/30 rounded-xl text-white placeholder-white/50 focus:border-yellow-400 focus:bg-white/20 transition-all font-medium"
                   placeholder="React, Node.js, Python"
                 />
               </div>
@@ -211,9 +215,11 @@ const AuthModal = ({ isOpen, onClose, defaultTab = 'login' }) => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 bg-primary-500 text-white font-medium rounded-lg hover:bg-primary-600 transition disabled:opacity-50"
+                className="relative w-full py-4 text-lg font-black text-purple-900 rounded-xl overflow-hidden group shadow-2xl disabled:opacity-50 transform hover:scale-105 transition-all"
               >
-                {loading ? 'Creating account...' : 'Sign Up'}
+                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 group-hover:scale-110 transition-transform"></div>
+                <div className="absolute inset-0 shimmer"></div>
+                <span className="relative">{loading ? 'Creating account...' : 'Sign Up'}</span>
               </button>
             </form>
           )}

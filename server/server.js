@@ -47,7 +47,7 @@ app.get('/', (req, res) => {
       projects: '/api/projects',
       teams: '/api/teams'
     }
-  }); 
+  });
 });
 
 // 404 handler

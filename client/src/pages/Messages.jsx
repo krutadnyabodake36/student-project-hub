@@ -60,7 +60,7 @@ const Messages = () => {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    
+
     if (!newMessage.trim() || !userId) return;
 
     setSending(true);
@@ -68,7 +68,7 @@ const Messages = () => {
       const response = await messageAPI.sendMessage(userId, newMessage.trim());
       setMessages([...messages, response.data.data]);
       setNewMessage('');
-      fetchConversations(); // Refresh conversations list
+      fetchConversations();
     } catch (error) {
       toast.error('Failed to send message');
       console.error(error);
@@ -98,37 +98,50 @@ const Messages = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen animated-gradient">
         <Navbar />
         <div className="flex justify-center items-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500"></div>
+          <div className="relative">
+            <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-white"></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+              <div className="w-10 h-10 bg-white rounded-full animate-pulse"></div>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen animated-gradient">
       <Navbar />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-xl shadow-md overflow-hidden" style={{ height: '80vh' }}>
+        <div className="glass rounded-3xl shadow-2xl overflow-hidden border-2 border-white/20" style={{ height: '80vh' }}>
           <div className="flex h-full">
             {/* Conversations List */}
-            <div className="w-1/3 border-r border-gray-200 overflow-y-auto">
-              <div className="p-4 border-b border-gray-200">
-                <h2 className="text-xl font-bold text-gray-900">Messages</h2>
+            <div className="w-1/3 border-r border-white/20 overflow-y-auto glass-dark">
+              <div className="p-6 border-b border-white/20">
+                <h2 className="text-2xl font-black text-white flex items-center gap-2">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                  Messages
+                </h2>
               </div>
 
               {conversations.length === 0 ? (
                 <div className="p-8 text-center">
-                  <p className="text-gray-500 mb-4">No conversations yet</p>
-                  <p className="text-sm text-gray-400">
+                  <svg className="w-16 h-16 mx-auto mb-4 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                  <p className="text-white/80 mb-2 font-bold">No conversations yet</p>
+                  <p className="text-sm text-white/60">
                     Start a conversation by visiting a user's profile
                   </p>
                 </div>
               ) : (
-                <div className="divide-y divide-gray-200">
+                <div className="divide-y divide-white/10">
                   {conversations.map((conversation) => {
                     const otherUser = getOtherUser(conversation);
                     const unreadCount = conversation.unreadCount?.get?.(user._id) || 0;
@@ -137,42 +150,41 @@ const Messages = () => {
                       <div
                         key={conversation._id}
                         onClick={() => navigate(`/messages/${otherUser._id}`)}
-                        className={`p-4 hover:bg-gray-50 cursor-pointer transition ${
-                          userId === otherUser._id ? 'bg-blue-50' : ''
-                        }`}
+                        className={`p-4 hover:bg-white/10 cursor-pointer transition ${userId === otherUser._id ? 'bg-white/20' : ''
+                          }`}
                       >
                         <div className="flex items-center space-x-3">
                           {otherUser.profilePicture ? (
                             <img
                               src={otherUser.profilePicture.startsWith('http')
                                 ? otherUser.profilePicture
-                                : `${api.defaults.baseURL.replace(/\/api\/?$/,'')}${otherUser.profilePicture}`}
+                                : `${api.defaults.baseURL.replace(/\/api\/?$/, '')}${otherUser.profilePicture}`}
                               alt={otherUser.name}
-                              className="w-12 h-12 rounded-full object-cover"
+                              className="w-12 h-12 rounded-full object-cover ring-2 ring-white/30"
                             />
                           ) : (
-                            <div className="w-12 h-12 rounded-full bg-primary-500 flex items-center justify-center text-white font-semibold">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-400 to-pink-600 flex items-center justify-center text-white font-black shadow-lg">
                               {otherUser.name.charAt(0).toUpperCase()}
                             </div>
                           )}
 
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between">
-                              <h3 className="text-sm font-semibold text-gray-900 truncate">
+                              <h3 className="text-sm font-bold text-white truncate">
                                 {otherUser.name}
                               </h3>
                               {conversation.lastMessageAt && (
-                                <span className="text-xs text-gray-500">
+                                <span className="text-xs text-white/60">
                                   {formatTime(conversation.lastMessageAt)}
                                 </span>
                               )}
                             </div>
                             <div className="flex items-center justify-between">
-                              <p className="text-sm text-gray-500 truncate">
+                              <p className="text-sm text-white/70 truncate">
                                 {conversation.lastMessage?.content || 'Start a conversation'}
                               </p>
                               {unreadCount > 0 && (
-                                <span className="ml-2 px-2 py-0.5 text-xs font-semibold bg-primary-500 text-white rounded-full">
+                                <span className="ml-2 px-2 py-0.5 text-xs font-black bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-full">
                                   {unreadCount}
                                 </span>
                               )}
@@ -191,7 +203,7 @@ const Messages = () => {
               {userId && currentConversation ? (
                 <>
                   {/* Chat Header */}
-                  <div className="p-4 border-b border-gray-200 flex items-center justify-between">
+                  <div className="p-4 border-b border-white/20 glass-dark flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       {currentConversation.participants
                         .filter(p => p._id !== user._id)
@@ -201,18 +213,18 @@ const Messages = () => {
                               <img
                                 src={otherUser.profilePicture.startsWith('http')
                                   ? otherUser.profilePicture
-                                  : `${api.defaults.baseURL.replace(/\/api\/?$/,'')}${otherUser.profilePicture}`}
+                                  : `${api.defaults.baseURL.replace(/\/api\/?$/, '')}${otherUser.profilePicture}`}
                                 alt={otherUser.name}
-                                className="w-10 h-10 rounded-full object-cover"
+                                className="w-10 h-10 rounded-full object-cover ring-2 ring-white/30"
                               />
                             ) : (
-                              <div className="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white font-semibold">
+                              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-pink-600 flex items-center justify-center text-white font-black">
                                 {otherUser.name.charAt(0).toUpperCase()}
                               </div>
                             )}
                             <div>
-                              <h3 className="font-semibold text-gray-900">{otherUser.name}</h3>
-                              <p className="text-xs text-gray-500">
+                              <h3 className="font-bold text-white">{otherUser.name}</h3>
+                              <p className="text-xs text-white/60">
                                 {otherUser.lastActive && `Active ${formatTime(otherUser.lastActive)}`}
                               </p>
                             </div>
@@ -222,7 +234,7 @@ const Messages = () => {
 
                     <button
                       onClick={() => navigate(`/user/${userId}`)}
-                      className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                      className="text-sm text-yellow-300 hover:text-yellow-200 font-bold transition-colors"
                     >
                       View Profile
                     </button>
@@ -232,7 +244,7 @@ const Messages = () => {
                   <div className="flex-1 overflow-y-auto p-4 space-y-4">
                     {messages.length === 0 ? (
                       <div className="flex items-center justify-center h-full">
-                        <p className="text-gray-500">No messages yet. Start the conversation!</p>
+                        <p className="text-white/70 font-medium">No messages yet. Start the conversation!</p>
                       </div>
                     ) : (
                       messages.map((message) => {
@@ -243,14 +255,13 @@ const Messages = () => {
                             className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
                           >
                             <div
-                              className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
-                                isOwn
-                                  ? 'bg-primary-500 text-white'
-                                  : 'bg-gray-200 text-gray-900'
-                              }`}
+                              className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl shadow-lg ${isOwn
+                                  ? 'bg-gradient-to-r from-purple-500 to-pink-600 text-white'
+                                  : 'glass text-white'
+                                }`}
                             >
-                              <p className="break-words">{message.content}</p>
-                              <p className={`text-xs mt-1 ${isOwn ? 'text-primary-100' : 'text-gray-500'}`}>
+                              <p className="break-words font-medium">{message.content}</p>
+                              <p className={`text-xs mt-1 ${isOwn ? 'text-white/80' : 'text-white/60'}`}>
                                 {formatTime(message.createdAt)}
                               </p>
                             </div>
@@ -262,22 +273,23 @@ const Messages = () => {
                   </div>
 
                   {/* Message Input */}
-                  <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-200">
+                  <form onSubmit={handleSendMessage} className="p-4 border-t border-white/20 glass-dark">
                     <div className="flex items-center space-x-3">
                       <input
                         type="text"
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         placeholder="Type a message..."
-                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                        className="flex-1 px-5 py-3 bg-white/10 border-2 border-white/30 rounded-xl text-white placeholder-white/50 focus:border-yellow-400 focus:bg-white/20 transition-all font-medium"
                         disabled={sending}
                       />
                       <button
                         type="submit"
                         disabled={sending || !newMessage.trim()}
-                        className="px-6 py-2 bg-primary-500 text-white font-medium rounded-lg hover:bg-primary-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="relative px-6 py-3 text-sm font-black text-purple-900 rounded-xl overflow-hidden group shadow-2xl disabled:opacity-50 transform hover:scale-105 transition-all"
                       >
-                        {sending ? 'Sending...' : 'Send'}
+                        <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 group-hover:scale-110 transition-transform"></div>
+                        <span className="relative">{sending ? 'Sending...' : 'Send'}</span>
                       </button>
                     </div>
                   </form>
@@ -286,7 +298,7 @@ const Messages = () => {
                 <div className="flex-1 flex items-center justify-center">
                   <div className="text-center">
                     <svg
-                      className="mx-auto h-24 w-24 text-gray-400 mb-4"
+                      className="mx-auto h-24 w-24 text-white/50 mb-4"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -294,14 +306,14 @@ const Messages = () => {
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        strokeWidth={1}
+                        strokeWidth={2}
                         d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
                       />
                     </svg>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    <h3 className="text-lg font-black text-white mb-2">
                       Select a conversation
                     </h3>
-                    <p className="text-gray-500">
+                    <p className="text-white/70">
                       Choose a conversation from the list to start messaging
                     </p>
                   </div>
